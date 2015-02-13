@@ -40,6 +40,10 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 		return parent::getCMSFields($params);
 	}
 
+	public function Links() {
+		return $this->getManyManyComponents('Links')->sort('Sort', 'ASC');
+	}
+
 	protected function validate() {
 		$this->beforeExtending('validate', function($result) {
 			$this->validSlug($result);

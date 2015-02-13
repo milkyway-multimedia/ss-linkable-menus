@@ -37,6 +37,10 @@ class LinkThatCanActAsMenu extends \DataExtension
 			$this->updateFields($fields);
 	}
 
+	public function MenuLinks() {
+		return $this->owner->getManyManyComponents('MenuLinks')->sort('Sort', 'ASC');
+	}
+
 	public function allowLinkToActAsMenu($fields, $form = null, $relation = 'MenuLinks', $parent = null, $controller = null, $item = null)
 	{
 		if(!$this->owner->config()->always_use_selection_group)
