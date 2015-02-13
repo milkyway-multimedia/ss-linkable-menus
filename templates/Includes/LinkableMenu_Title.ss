@@ -1,0 +1,1 @@
+<% if $AltTitle %>$AltTitle<% else_if $MenuLabel %>$MenuLabel<% else_if $MenuTitle %>$MenuTitle<% else %>$Title<% end_if %>

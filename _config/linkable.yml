@@ -1,0 +1,10 @@
+---
+Name: linkable-menus--extensions
+After: 'linkable/*'
+---
+Link:
+  extensions:
+    - 'Milkyway\SS\LinkableMenus\Extensions\LinkThatCanActAsMenu'
+LeftAndMain:
+  extra_requirements_css:
+    - 'linkable-menus/css/linkable-menus.admin.css'

@@ -1,0 +1,19 @@
+{
+	"name"        : "milkyway-multimedia/ss-linkable-menus",
+	"description" : "This is an extension to add (complex) menu management for the Linkable module",
+	"type"        : "silverstripe-module",
+	"keywords"    : ["linkable", "silverstripe", "menus"],
+	"license"     : "MIT",
+    "require"     : {
+        "php":                          ">=5.4",
+        "sheadawson/silverstripe-linkable"     : "~1",
+        "silverstripe-australia/gridfieldextensions"     : "dev-master",
+        "milkyway-multimedia/ss-gridfield-utils"     : "dev-master"
+    },
+    "suggest"     : {
+        "milkyway-multimedia/ss-mwm-formfields"     : "Allow links to use the tabbed version of SelectionGroup, and make the interface slightly less cluttered."
+    },
+	"extra"       : {
+		"installer-name" : "linkable-menus"
+	}
+}
