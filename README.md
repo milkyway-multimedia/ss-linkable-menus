@@ -15,6 +15,13 @@ Add the following to your composer.json file
 
 ```
 
+### Requirements
+If installing manually, the following modules are required to get this one to work properly
+
+* [Silverstripe Linkable](https://github.com/sheadawson/silverstripe-linkable)
+* [SilverStripe Grid Field Extensions Module](https://github.com/silverstripe-australia/silverstripe-gridfieldextensions)
+* [GridField Utilities](https://github.com/milkyway-multimedia/ss-gridfield-utils)
+
 ### Usage in templates
 
 ```

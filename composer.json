@@ -11,7 +11,7 @@
         "milkyway-multimedia/ss-gridfield-utils"     : "dev-master"
     },
     "suggest"     : {
-        "milkyway-multimedia/ss-mwm-formfields"     : "Allow links to use the tabbed version of SelectionGroup, and make the interface slightly less cluttered."
+        "milkyway-multimedia/ss-mwm-formfields"     : "(Not yet available for download) Allow links to use the tabbed version of SelectionGroup, and make the interface slightly less cluttered."
     },
 	"extra"       : {
 		"installer-name" : "linkable-menus"
