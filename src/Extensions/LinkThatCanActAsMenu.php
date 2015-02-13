@@ -125,11 +125,13 @@ class LinkThatCanActAsMenu extends \DataExtension
 	}
 
 	public function setFile_OpenInNewWindow($value) {
-		$this->owner->OpenInNewWindow = $value;
+		if($this->owner->Type == 'File')
+			$this->owner->OpenInNewWindow = $value;
 	}
 
 	public function setSiteTree_OpenInNewWindow($value) {
-		$this->owner->OpenInNewWindow = $value;
+		if($this->owner->Type == 'SiteTree')
+			$this->owner->OpenInNewWindow = $value;
 	}
 
 	/**
