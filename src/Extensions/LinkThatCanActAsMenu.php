@@ -113,7 +113,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 		}
 
 		$fields->addFieldsToTab('Root.Main', [
-			$fieldsForForm[] = \HorizontalRuleField::create('HR-SUB_MENU')->invisible(),
+			$fieldsForForm[] = \LiteralField::create('HR-SUB_MENU', '<p><br /></p>'),
 			$fieldsForForm[] = \HeaderField::create('HEADING-SUB_MENU', _t('Link.SUB_MENU', 'Sub-menu'), 3),
 		    $links
 		]);
