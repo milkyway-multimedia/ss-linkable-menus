@@ -52,7 +52,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 		$fields->removeByName($relation);
 
 		if(($typeField = $fields->fieldByName('Root.Main.Type')) && ($typeField instanceof \TabbedSelectionGroup)) {
-			$typeField->setLabelTab(_t('Link.LINK_TO', 'Link to:'));
+			$typeField->showAsDropdown(true)->setLabelTab(_t('Link.LINK_TO', 'Link to:'));
 		}
 		else {
 			$fields->addFieldsToTab('Root.Main', [
@@ -122,6 +122,8 @@ class LinkThatCanActAsMenu extends \DataExtension
 			foreach($fieldsForForm as $field)
 				$field->setForm($form);
 		}
+
+		$this->owner->extend('updateLinkThatCanActAsMenuFields', $fields, $form, $relation, $parent, $controller, $item);
 	}
 
 	public function setFile_OpenInNewWindow($value) {

@@ -14,6 +14,12 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 		'Slug' => 'Varchar',
 	];
 
+	private static $summary_fields = [
+		'Title',
+		'Slug',
+		'TopLevelLinks',
+	];
+
 	private static $many_many = [
 		'Links' => 'Link',
 	];
@@ -42,6 +48,10 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 
 	public function Links() {
 		return $this->getManyManyComponents('Links')->sort('Sort', 'ASC');
+	}
+
+	public function getTopLevelLinks() {
+		return $this->Links()->count();
 	}
 
 	protected function validate() {
