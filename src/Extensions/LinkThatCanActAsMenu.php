@@ -9,6 +9,10 @@
 
 class LinkThatCanActAsMenu extends \DataExtension
 {
+	const OPEN_IN_NEW__FALSE = 2;
+	const OPEN_IN_NEW__TRUE = 1;
+	const OPEN_IN_NEW__INHERIT = 0;
+
 	private static $many_many = [
 		'MenuLinks' => 'Link',
 	];
@@ -19,6 +23,8 @@ class LinkThatCanActAsMenu extends \DataExtension
 
 	private static $many_many_extraFields = [
 		'MenuLinks' => [
+			'AltTitle' => 'Varchar',
+			'AltOpenInNewWindow' => 'Int(1)',
 			'Sort' => 'Int',
 		],
 	];
@@ -37,8 +43,53 @@ class LinkThatCanActAsMenu extends \DataExtension
 			$this->updateFields($fields);
 	}
 
+	public function EditableColumnsForMenuLinks($grid = null) {
+		$editableColumns = [
+			'AltTitle'       => [
+				'title'    => _t('Linkable.MENU_LABEL', 'Menu Label'),
+				'callback' => function ($record, $col) {
+						return \TextField::create($col, _t('Linkable.MENU_LABEL', 'Menu Label'))->setAttribute('placeholder', $record->Title);
+					},
+			],
+			'LinkType' => [
+				'title'    => _t('Linkable.TYPE', 'Type'),
+				'callback' => function ($record, $col) {
+						return \ReadonlyField::create($col);
+					},
+			],
+			'LinkURL'   => [
+				'title'    => _t('Linkable.URL', 'URL'),
+				'callback' => function ($record, $col) {
+						return \ReadonlyField::create($col);
+					},
+			],
+			'AltOpenInNewWindow'       => [
+				'title'    => _t('Linkable.OPEN_IN_NEW_WINDOW', 'Open in new window?'),
+				'callback' => function ($record, $col) {
+						return \DropdownField::create($col, $col, [
+							self::OPEN_IN_NEW__INHERIT => '(Inherit: ' . $record->obj('OpenInNewWindow')->Nice() . ')',
+							self::OPEN_IN_NEW__FALSE => _t('NO', 'No'),
+							self::OPEN_IN_NEW__TRUE => _t('YES', 'Yes'),
+						]);
+					},
+			],
+		];
+
+		$this->owner->extend('updateEditableColumnsForMenuLinks', $editableColumns, $grid);
+
+		return $editableColumns;
+	}
+
 	public function MenuLinks() {
 		return $this->owner->getManyManyComponents('MenuLinks')->sort('Sort', 'ASC');
+	}
+
+	public function getRelativeLink() {
+		return !$this->owner->Type ? '#' : null;
+	}
+
+	public function getLinkingMode() {
+		return $this->owner->SiteTree()->exists() ? $this->owner->SiteTree()->LinkingMode() : $this->owner->Type ? strtolower($this->owner->Type) : 'none';
 	}
 
 	public function allowLinkToActAsMenu($fields, $form = null, $relation = 'MenuLinks', $parent = null, $controller = null, $item = null)
@@ -51,10 +102,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 
 		$fields->removeByName($relation);
 
-		if(($typeField = $fields->fieldByName('Root.Main.Type')) && ($typeField instanceof \TabbedSelectionGroup)) {
-			$typeField->showAsDropdown(true)->setLabelTab(_t('Link.LINK_TO', 'Link to:'));
-		}
-		else {
+		if(!($typeField = $fields->fieldByName('Root.Main.Type')) || !($typeField instanceof \TabbedSelectionGroup)) {
 			$fields->addFieldsToTab('Root.Main', [
 				$fieldsForForm[] = \HeaderField::create('HEADING-LINK_TO', _t('Link.LINK_TO', 'Link to:'), 3),
 				$fieldsForForm[] = \FormMessageField::create('MSG-LINK_TO', _t('Link.MSG-LINK_TO', 'When as user clicks on this link in the menu, where does it go?'), 'info')->cms(),
@@ -93,6 +141,8 @@ class LinkThatCanActAsMenu extends \DataExtension
 						new \GridFieldAddExistingSearchButton('buttons-before-right')
 					)
 			);
+
+			$ec->setDisplayFields(singleton($item->$relation()->dataClass())->EditableColumnsForMenuLinks($links));
 
 			if($detailForm = $config->getComponentByType('GridFieldDetailForm')) {
 				$detailForm->setItemEditFormCallback(function($form, $controller)use($item){
@@ -158,9 +208,12 @@ class LinkThatCanActAsMenu extends \DataExtension
 		$type = \ClassInfo::exists('TabbedSelectionGroup') ? 'TabbedSelectionGroup' : 'SelectionGroup';
 
 		if($fields->fieldByName('Root'))
-			$fields->addFieldsToTab('Root.Main', \Object::create($type, 'Type', $types));
+			$fields->addFieldsToTab('Root.Main', $typeField = \Object::create($type, 'Type', $types));
 		else
-			$fields->push(\Object::create($type, 'Type', $types));
+			$fields->push($typeField = \Object::create($type, 'Type', $types));
+
+		if($type == 'TabbedSelectionGroup')
+			$typeField->showAsDropdown(true)->setLabelTab(_t('Link.LINK_TO', 'Link to:'));
 	}
 
 	protected function clearFieldList(\FieldList $fields) {

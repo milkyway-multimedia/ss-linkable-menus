@@ -27,7 +27,7 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 	private static $many_many_extraFields = [
 		'Links' => [
 			'AltTitle' => 'Varchar',
-			'AltOpenInNewWindow' => 'Boolean',
+			'AltOpenInNewWindow' => 'Int(1)',
 			'Sort' => 'Int',
 		],
 	];
