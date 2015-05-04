@@ -221,7 +221,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 			if($field instanceof \CompositeField)
 				$this->clearFieldList($field->FieldList());
 
-			if(in_array($field->Name, ['Root', 'Main', 'Title'])) continue;
+			if(!$field->Name || !in_array($field->Name, ['Type', 'URL', 'Email', 'File', 'OpenInNewWindow', 'SiteTreeID', 'Anchor', 'SiteTree_OpenInNewWindow'])) continue;
 
 			$fields->removeByName($field->Name);
 			if($field->hasExtension('DisplayLogicFormField'))
