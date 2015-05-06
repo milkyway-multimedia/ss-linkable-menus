@@ -117,7 +117,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 						'GridFieldDeleteAction'
 					)
 					->addComponent(
-						new \Milkyway\SS\GridFieldUtils\AddNewInlineExtended('buttons-before-left', _t('GridFieldExtensions.QUICK_ADD', 'Quick Add')),
+						$addNewExtended = new \Milkyway\SS\GridFieldUtils\AddNewInlineExtended('buttons-before-left', _t('GridFieldExtensions.QUICK_ADD', 'Quick Add')),
 						'GridFieldToolbarHeader'
 					)
 					->addComponent(
@@ -141,6 +141,8 @@ class LinkThatCanActAsMenu extends \DataExtension
 						new \GridFieldAddExistingSearchButton('buttons-before-right')
 					)
 			);
+
+			$addNewExtended->openToggleByDefault = true;
 
 			$ec->setDisplayFields(singleton($item->$relation()->dataClass())->EditableColumnsForMenuLinks($links));
 
