@@ -244,7 +244,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 				);
 			case 'File':
 				return \CompositeField::create(
-					\UploadField::create('File', _t('Linkable.FILE', 'File'), 'File', 'ID', 'Title')->setConfig('canUpload', false),
+					\UploadField::create('File', _t('Linkable.FILE', 'File'), 'File', 'ID', 'Title'),
 					\CheckboxField::create('File_OpenInNewWindow', _t('Linkable.OpenInNewWindow', 'Open link in a new window'))
 				);
 			case 'SiteTree':
