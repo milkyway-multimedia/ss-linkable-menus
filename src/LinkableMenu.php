@@ -32,6 +32,8 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 		],
 	];
 
+	protected static $_emptyMenu;
+
 	public function getCMSFields($params = []) {
 		$this->beforeExtending('updateCMSFields', function(\FieldList $fields) {
 			if($slug = $fields->dataFieldByName('Slug'))
@@ -170,7 +172,12 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 
 	public static function get_menu_by_slug($slug)
 	{
-		return \DataList::create(__CLASS__)->filter(['Slug' => $slug])->first();
+		$menu = \DataList::create(__CLASS__)->filter(['Slug' => $slug])->first();
+
+		if(!$menu && !static::$_emptyMenu)
+			static::$_emptyMenu = Object::create(__CLASS__);
+
+		return $menu ? $menu : static::$_emptyMenu;
 	}
 
 	protected function checkIfHasGlobalMenuPermission($member = null) {
