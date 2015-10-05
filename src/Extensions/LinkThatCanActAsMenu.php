@@ -117,7 +117,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 						'GridFieldDeleteAction'
 					)
 					->addComponent(
-						$addNewExtended = new \Milkyway\SS\GridFieldUtils\AddNewInlineExtended('buttons-before-left', _t('GridFieldExtensions.QUICK_ADD', 'Quick Add')),
+						$addNewExtended = new \Milkyway\SS\GridFieldUtils\AddNewInlineExtended('buttons-before-left'),
 						'GridFieldToolbarHeader'
 					)
 					->addComponent(
@@ -128,6 +128,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 					->removeComponentsByType('GridFieldPageCount')
 					->removeComponentsByType('GridFieldPaginator')
 					->removeComponentsByType('GridFieldDataColumns')
+					->removeComponentsByType('GridFieldAddNewButton')
 					->addComponent(
 						$ec = new \GridFieldEditableColumns(),
 						'GridFieldEditButton'
