@@ -227,8 +227,8 @@ class LinkThatCanActAsMenu extends \DataExtension
 			if(!$field->Name || !in_array($field->Name, ['Type', 'URL', 'Email', 'File', 'OpenInNewWindow', 'SiteTreeID', 'Anchor', 'SiteTree_OpenInNewWindow'])) continue;
 
 			$fields->removeByName($field->Name);
-			if($field->hasExtension('DisplayLogicFormField'))
-				$field->setDisplayLogicCriteria(null);
+//			if($field->hasExtension('DisplayLogicFormField'))
+//				$field->setDisplayLogicCriteria(null);
 		}
 	}
 
@@ -245,7 +245,7 @@ class LinkThatCanActAsMenu extends \DataExtension
 				);
 			case 'File':
 				return \CompositeField::create(
-					\UploadField::create('File', _t('Linkable.FILE', 'File'), 'File', 'ID', 'Title'),
+					\UploadField::create('File', _t('Linkable.FILE', 'File')),
 					\CheckboxField::create('File_OpenInNewWindow', _t('Linkable.OpenInNewWindow', 'Open link in a new window'))
 				);
 			case 'SiteTree':
