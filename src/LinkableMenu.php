@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Milkyway Multimedia
  * LinkableMenu.php
@@ -6,7 +7,8 @@
  * @package milkyway-multimedia/ss-linkable-menus
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
-class LinkableMenu extends \DataObject implements \PermissionProvider, \TemplateGlobalProvider {
+class LinkableMenu extends \DataObject implements \PermissionProvider, \TemplateGlobalProvider
+{
 	private static $singular_name = 'Menu';
 
 	private static $db = [
@@ -28,19 +30,22 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 		'Links' => [
 			'AltTitle' => 'Varchar',
 			'AltOpenInNewWindow' => 'Int(1)',
+			'LoggedInDisplay' => "Enum('Always,LoggedIn,NotLoggedIn')",
 			'Sort' => 'Int',
 		],
 	];
 
 	protected static $_emptyMenu;
 
-	public function getCMSFields($params = []) {
-		$this->beforeExtending('updateCMSFields', function(\FieldList $fields) {
-			if($slug = $fields->dataFieldByName('Slug'))
-				$slug->setDescription(_t(__CLASS__.'.SLUG-DESC', 'The slug of the menu must be unique. If none provided, will be automatically generated from Title.'));
+	public function getCMSFields($params = [])
+	{
+		$this->beforeExtending('updateCMSFields', function (\FieldList $fields) {
+			if ($slug = $fields->dataFieldByName('Slug')) {
+				$slug->setDescription(_t(__CLASS__ . '.SLUG-DESC',
+					'The slug of the menu must be unique. If none provided, will be automatically generated from Title.'));
+			}
 
-			$link = singleton($this->Links()->dataClass());
-			$link->allowLinkToActAsMenu($fields, null, 'Links', $this, null, $this);
+			singleton($this->Links()->dataClass())->allowLinkToActAsMenu($fields, null, 'Links', $this, null, $this);
 			$fields->removeByName('HR-SUB_MENU');
 			$fields->removeByName('HEADING-SUB_MENU');
 		});
@@ -48,68 +53,81 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 		return parent::getCMSFields($params);
 	}
 
-	public function Links() {
+	public function Links()
+	{
 		return $this->getManyManyComponents('Links')->sort('Sort', 'ASC');
 	}
 
-	public function getTopLevelLinks() {
+	public function getTopLevelLinks()
+	{
 		return $this->Links()->count();
 	}
 
-	protected function validate() {
-		$this->beforeExtending('validate', function($result) {
+	protected function validate()
+	{
+		$this->beforeExtending('validate', function ($result) {
 			$this->validSlug($result);
 		});
 
 		return parent::validate();
 	}
 
-	protected function onBeforeWrite() {
+	protected function onBeforeWrite()
+	{
 		parent::onBeforeWrite();
 		// If there is no Slug set, generate one from Title
-		if(!$this->Slug && $this->Title) {
+		if (!$this->Slug && $this->Title) {
 			$this->Slug = $this->generateSlug($this->Title);
-		} else if($this->isChanged('Slug', 2)) {
-			$this->Slug = $this->generateSlug($this->Title, false);
+		} else {
+			if ($this->isChanged('Slug', 2)) {
+				$this->Slug = $this->generateSlug($this->Title, false);
+			}
 		}
 
 		// Ensure that this object has a non-conflicting Slug value.
 		$count = 2;
-		while(!$this->validSlug()) {
+		while (!$this->validSlug()) {
 			$this->Slug = preg_replace('/-[0-9]+$/', null, $this->Slug) . '-' . $count;
 			$count++;
 		}
 	}
 
-	public function generateSlug($title, $allowExtension = true){
+	public function generateSlug($title, $allowExtension = true)
+	{
 		$t = \URLSegmentFilter::create()->filter($title);
 
 		// Fallback to generic page name if path is empty (= no valid, convertable characters)
-		if(!$t || $t == '-' || $t == '-1') $t = "menu-$this->ID";
+		if (!$t || $t == '-' || $t == '-1') {
+			$t = "menu-$this->ID";
+		}
 
 		// Hook for extensions
-		if($allowExtension)
+		if ($allowExtension) {
 			$this->extend('updateSlug', $t, $title);
+		}
 
 		return $t;
 	}
 
-	public function validSlug($result = null) {
+	public function validSlug($result = null)
+	{
 		$errors = [];
 
-		if($result && $this->Slug) {
+		if ($result && $this->Slug) {
 			$filters = ['Slug' => $this->Slug];
 			$excludes = [];
 
-			if($this->ID)
+			if ($this->ID) {
 				$excludes['ID'] = $this->ID;
+			}
 
-			if($this->get()->filter($filters)->exclude($excludes)->exists())
+			if ($this->get()->filter($filters)->exclude($excludes)->exists()) {
 				$errors[] = _t(__CLASS__ . '.ERROR-NON_UNIQUE_SLUG', 'Slug must be unique');
+			}
 		}
 
-		if($result) {
-			array_map(function($error) use($result) {
+		if ($result) {
+			array_map(function ($error) use ($result) {
 				$result->error($error);
 			}, $errors);
 		}
@@ -117,11 +135,31 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 		return !count($errors);
 	}
 
+	public function onBeforeDelete()
+	{
+		$links = $this->Links();
+
+		if ($links instanceof DataList && $links->count()) {
+			foreach ($links as $link) {
+				$this->deleteLink($link);
+			}
+		}
+
+		parent::onBeforeDelete();
+	}
+
 	public function canCreate($member = null)
 	{
-		$this->beforeExtending(__METHOD__, function($member) {
-			if(!$this->checkIfHasGlobalMenuPermission($member))
+		$method = __FUNCTION__;
+
+		$this->beforeExtending(__FUNCTION__, function ($member) use ($method) {
+			if (!$this->checkIfHasGlobalMenuPermission($member)) {
 				return false;
+			}
+
+			if (singleton('SiteTree')->$method($member)) {
+				return true;
+			}
 		});
 
 		return parent::canCreate($member);
@@ -129,9 +167,16 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 
 	public function canEdit($member = null)
 	{
-		$this->beforeExtending(__METHOD__, function($member) {
-			if(!$this->checkIfHasGlobalMenuPermission($member))
+		$method = __FUNCTION__;
+
+		$this->beforeExtending(__FUNCTION__, function ($member) use ($method) {
+			if (!$this->checkIfHasGlobalMenuPermission($member)) {
 				return false;
+			}
+
+			if (singleton('SiteTree')->$method($member)) {
+				return true;
+			}
 		});
 
 		return parent::canEdit($member);
@@ -139,9 +184,16 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 
 	public function canView($member = null)
 	{
-		$this->beforeExtending(__METHOD__, function($member) {
-			if(!$this->checkIfHasGlobalMenuPermission($member))
+		$method = __FUNCTION__;
+
+		$this->beforeExtending(__FUNCTION__, function ($member) use ($method) {
+			if (!$this->checkIfHasGlobalMenuPermission($member)) {
 				return false;
+			}
+
+			if (singleton('SiteTree')->$method($member)) {
+				return true;
+			}
 		});
 
 		return parent::canView($member);
@@ -149,9 +201,16 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 
 	public function canDelete($member = null)
 	{
-		$this->beforeExtending(__METHOD__, function($member) {
-			if(!$this->checkIfHasGlobalMenuPermission($member))
+		$method = __FUNCTION__;
+
+		$this->beforeExtending(__FUNCTION__, function ($member) use ($method) {
+			if (!$this->checkIfHasGlobalMenuPermission($member)) {
 				return false;
+			}
+
+			if (singleton('SiteTree')->$method($member)) {
+				return true;
+			}
 		});
 
 		return parent::canDelete($member);
@@ -160,11 +219,12 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 	public function providePermissions()
 	{
 		return [
-			'MANAGE_MENU_SETS' => _t(__CLASS__.'.PERMISSION', 'Manage Menus'),
+			'MANAGE_MENU_SETS' => _t(__CLASS__ . '.PERMISSION', 'Manage Menus'),
 		];
 	}
 
-	public static function get_template_global_variables() {
+	public static function get_template_global_variables()
+	{
 		return [
 			'MenuSet' => 'get_menu_by_slug',
 		];
@@ -174,13 +234,29 @@ class LinkableMenu extends \DataObject implements \PermissionProvider, \Template
 	{
 		$menu = \DataList::create(__CLASS__)->filter(['Slug' => $slug])->first();
 
-		if(!$menu && !static::$_emptyMenu)
+		if (!$menu && !static::$_emptyMenu) {
 			static::$_emptyMenu = Object::create(__CLASS__);
+		}
 
 		return $menu ? $menu : static::$_emptyMenu;
 	}
 
-	protected function checkIfHasGlobalMenuPermission($member = null) {
+	public function checkIfHasGlobalMenuPermission($member = null)
+	{
 		return \Permission::checkMember($member, 'MANAGE_MENU_SETS');
 	}
-} 
+
+	protected function deleteLink($link) {
+		$subLinksExists = $link->MenuLinks()->exists();
+
+		if($subLinksExists) {
+			foreach($link->MenuLinks() as $subLink) {
+				$this->deleteLink($subLink);
+			}
+		}
+
+		if(!$subLinksExists || !$link->Menus()->exists()) {
+			$link->delete();
+		}
+	}
+}

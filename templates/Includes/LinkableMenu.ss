@@ -2,7 +2,9 @@
     <% with $MenuSet($menuSlug) %>
         <ul class="linkable-menu">
             <% loop $Links %>
-                <% include LinkableMenu_Item useDropdowns=1 %>
+                <% if $canViewInMenu %>
+                    <% include LinkableMenu_Item useDropdowns=1 %>
+                <% end_if %>
             <% end_loop %>
         </ul>
     <% end_with %>
