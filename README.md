@@ -2,6 +2,8 @@ Menus for Linkable
 ======
 This is an extension to add menu management for the Linkable module. It works in a tree view within GridField for easy visualising, and the ability to add sub-menus.
 
+![preview](images/screenshots/Screenshot-01.jpg)
+
 Also includes some templates so you can easily use them recursively in your own templates (or as a base to copy from so you can have your own classes). By default, the templates are compatible with Twitter Bootstrap.
 
 ## Install
@@ -39,7 +41,7 @@ If installing manually, the following modules are required to get this one to wo
 * MIT
 
 ## Version 
-* Version 0.1 - Alpha
+* Version 0.2 (Alpha)
 
 ## Contact
 #### Milkyway Multimedia

@@ -1,0 +1,12 @@
+{
+  "css" : [
+    {
+      "dest": "css/"
+    }
+  ],
+  "images"  : [
+    {
+      "dest": "images/"
+    }
+  ]
+}

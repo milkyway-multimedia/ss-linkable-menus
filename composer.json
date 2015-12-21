@@ -1,19 +1,26 @@
 {
-	"name"        : "milkyway-multimedia/ss-linkable-menus",
-	"description" : "This is an extension to add (complex) menu management for the Linkable module",
-	"type"        : "silverstripe-module",
-	"keywords"    : ["linkable", "silverstripe", "menus"],
-	"license"     : "MIT",
-    "require"     : {
-        "php":                          ">=5.4",
-        "sheadawson/silverstripe-linkable"     : "~1",
-        "silverstripe-australia/gridfieldextensions"     : "~1",
-        "milkyway-multimedia/ss-gridfield-utils"     : "dev-master"
-    },
-    "suggest"     : {
-        "milkyway-multimedia/ss-mwm-formfields"     : "(Not yet available for download) Allow links to use the tabbed version of SelectionGroup, and make the interface slightly less cluttered."
-    },
-	"extra"       : {
-		"installer-name" : "linkable-menus"
-	}
+  "name"       : "milkyway-multimedia/ss-linkable-menus",
+  "description": "This is an extension to add (complex) menu management for the Linkable module",
+  "type"       : "silverstripe-module",
+  "keywords"   : [
+    "linkable",
+    "silverstripe",
+    "menus"
+  ],
+  "license"    : "MIT",
+  "require"    : {
+    "php"                                       : ">=5.4",
+    "sheadawson/silverstripe-linkable"          : "~1",
+    "silverstripe-australia/gridfieldextensions": "~1",
+    "milkyway-multimedia/ss-gridfield-utils"    : "~0.3"
+  },
+  "suggest"    : {
+    "milkyway-multimedia/ss-mwm-formfields": "Allow links to use the tabbed version of SelectionGroup, and make the interface slightly less cluttered."
+  },
+  "extra"      : {
+    "installer-name": "linkable-menus",
+    "branch-alias": {
+      "dev-master": "0.2.x-dev"
+    }
+  }
 }
